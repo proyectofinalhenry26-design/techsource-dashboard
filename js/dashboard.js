@@ -8,8 +8,12 @@ async function cargarResumen() {
     .select("*")
     .order("fecha_cambio", { ascending: false });
 
-  if (err1 || err2) {
-    console.error(err1 || err2);
+  const { data: cotizaciones, error: err3 } = await supabaseClient
+    .from("cotizaciones")
+    .select("*");
+
+  if (err1 || err2 || err3) {
+    console.error(err1 || err2 || err3);
     return;
   }
 
@@ -23,12 +27,11 @@ async function cargarResumen() {
   document.getElementById("kpi-vigentes").textContent = vigentes;
   document.getElementById("kpi-proveedores").textContent = proveedores;
   document.getElementById("kpi-cambios").textContent = historial.length;
-  document.getElementById("kpi-sync").textContent = ultimaSync
-    ? new Date(ultimaSync).toLocaleString()
-    : "--";
-  document.getElementById("ultima-sync").textContent = `Última sync: ${ultimaSync ? new Date(ultimaSync).toLocaleString() : "--"}`;
+  document.getElementById("kpi-cotizaciones").textContent = cotizaciones.length;
+  document.getElementById("ultima-sync").textContent =
+    `Última sync: ${ultimaSync ? new Date(ultimaSync).toLocaleString() : "--"}`;
 
-  renderCambios(historial.slice(0, 10));
+  renderCambios(historial.slice(0, 3));
   renderCatalogo(catalogo.slice(0, 20));
   renderPriceChart(historial.slice(0, 12).reverse());
 }
