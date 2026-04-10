@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechSource Solutions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">TechSource Solutions</div>
+    <nav class="nav">
+      <a href="#resumen">Resumen</a>
+      <a href="#historial">Historial</a>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#cotizaciones">Cotizaciones</a>
+    </nav>
+    <div class="topbar-right">
+      <span id="ultima-sync">Última sync: --</span>
+      <button class="btn-primary">Nueva cotización</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero" id="resumen">
+      <div class="hero-content">
+        <h1>Supplier Sync & Smart Pricing Control Center</h1>
+        <p>Monitorea proveedores, detecta cambios de precio y gestiona cotizaciones en tiempo real.</p>
+      </div>
+    </section>
+
+    <section class="kpis">
+      <div class="card kpi">
+        <h3>Productos vigentes</h3>
+        <p id="kpi-vigentes">--</p>
+      </div>
+      <div class="card kpi">
+        <h3>Proveedores activos</h3>
+        <p id="kpi-proveedores">--</p>
+      </div>
+      <div class="card kpi highlight">
+        <h3>Cambios detectados</h3>
+        <p id="kpi-cambios">--</p>
+      </div>
+      <div class="card kpi">
+        <h3>Última sincronización</h3>
+        <p id="kpi-sync">--</p>
+      </div>
+    </section>
+
+    <section class="grid-two">
+      <div class="card">
+        <h2>Últimos cambios detectados</h2>
+        <div id="tabla-cambios"></div>
+      </div>
+
+      <div class="card" id="historial">
+        <h2>Historial de precios</h2>
+        <div id="chart"></div>
+      </div>
+    </section>
+
+    <section class="card" id="catalogo">
+      <h2>Catálogo vigente</h2>
+      <div id="tabla-catalogo"></div>
+    </section>
+
+    <section class="card" id="cotizaciones">
+      <h2>Cotizaciones</h2>
+      <p>Módulo en construcción.</p>
+    </section>
+  </main>
+
+  <script src="js/supabase.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
