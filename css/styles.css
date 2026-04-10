@@ -34,6 +34,7 @@ body {
     linear-gradient(180deg, #f8fbff 0%, #f2f6fc 100%);
   min-height: 100vh;
   overflow-x: hidden;
+  position: relative;
 }
 
 body::before {
@@ -60,6 +61,16 @@ body::after {
   filter: blur(10px);
   pointer-events: none;
   z-index: 0;
+}
+
+/* FONDO ILUSTRADO SUAVE */
+.bg-illustration {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.22;
+  background: url("../assets/fondo-suave.png") center center / cover no-repeat;
 }
 
 /* TOPBAR */
@@ -165,7 +176,7 @@ body::after {
   position: relative;
   z-index: 1;
   width: min(1120px, calc(100% - 48px));
-  margin: 18px auto 36px;
+  margin: 14px auto 28px;
 }
 
 /* HERO */
@@ -173,14 +184,14 @@ body::after {
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(247,250,255,0.94), rgba(240,245,252,0.93)),
-    radial-gradient(circle at 20% 20%, rgba(142,183,255,0.12), transparent 24%),
-    radial-gradient(circle at 80% 25%, rgba(142,183,255,0.10), transparent 20%);
+    linear-gradient(180deg, rgba(247,250,255,0.90), rgba(240,245,252,0.90)),
+    radial-gradient(circle at 18% 18%, rgba(142,183,255,0.10), transparent 22%),
+    radial-gradient(circle at 82% 24%, rgba(142,183,255,0.08), transparent 18%);
   border: 1px solid rgba(223, 231, 243, 0.92);
   border-radius: 24px;
-  padding: 34px 42px;
-  box-shadow: var(--shadow);
-  margin-bottom: 20px;
+  padding: 24px 34px;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 16px;
 }
 
 .hero::before {
@@ -188,8 +199,9 @@ body::after {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(120deg, transparent 0 22%, rgba(138, 170, 235, 0.07) 40%, transparent 58%),
-    linear-gradient(300deg, transparent 0 30%, rgba(138, 170, 235, 0.05) 50%, transparent 70%);
+    linear-gradient(120deg, transparent 0 22%, rgba(138, 170, 235, 0.05) 40%, transparent 58%),
+    linear-gradient(300deg, transparent 0 30%, rgba(138, 170, 235, 0.04) 50%, transparent 70%),
+    radial-gradient(circle at 85% 50%, rgba(130,160,220,0.08), transparent 30%);
   pointer-events: none;
 }
 
@@ -202,7 +214,7 @@ body::after {
 
 .hero h1 {
   margin: 0;
-  font-size: clamp(1.7rem, 2.6vw, 2.4rem);
+  font-size: clamp(1.45rem, 2.1vw, 2rem);
   line-height: 1.08;
   letter-spacing: -0.04em;
   font-weight: 800;
@@ -210,11 +222,11 @@ body::after {
 }
 
 .hero p {
-  margin: 12px auto 0;
-  max-width: 700px;
+  margin: 8px auto 0;
+  max-width: 650px;
   color: #4f648b;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 0.9rem;
+  line-height: 1.45;
   font-weight: 500;
 }
 
@@ -222,8 +234,8 @@ body::after {
 .kpis {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
 .card {
@@ -231,18 +243,18 @@ body::after {
   border: 1px solid rgba(223, 231, 243, 0.96);
   backdrop-filter: blur(8px);
   border-radius: 18px;
-  padding: 18px 18px 16px;
+  padding: 14px 16px 14px;
   box-shadow: var(--shadow-soft);
 }
 
 .kpi {
-  min-height: 108px;
+  min-height: 92px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(246,249,255,0.93));
   border-radius: 18px;
-  padding: 16px 18px;
+  padding: 14px 16px;
   box-shadow: var(--shadow-soft);
   border: 1px solid rgba(223, 231, 243, 0.95);
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
@@ -256,14 +268,14 @@ body::after {
 
 .kpi h3 {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   color: #48607f;
   font-weight: 700;
 }
 
 .kpi p {
-  margin: 6px 0 0;
-  font-size: 2rem;
+  margin: 4px 0 0;
+  font-size: 1.7rem;
   line-height: 1;
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -285,9 +297,9 @@ body::after {
 /* CONTENT GRID */
 .grid-two {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 18px;
-  margin-bottom: 20px;
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 h2 {
@@ -415,11 +427,11 @@ h3 {
   }
 
   .hero {
-    padding: 28px 24px;
+    padding: 22px 20px;
   }
 
   .hero h1 {
-    font-size: 1.9rem;
+    font-size: 1.7rem;
   }
 }
 
@@ -435,15 +447,15 @@ h3 {
 
   .card,
   .kpi {
-    padding: 16px;
+    padding: 14px;
   }
 
   .kpi p {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
 
   .hero p {
-    font-size: 0.92rem;
+    font-size: 0.88rem;
   }
 
   .logo img {
