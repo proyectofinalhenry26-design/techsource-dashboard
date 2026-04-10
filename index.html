@@ -4,25 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TechSource Solutions</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="css/styles.css" />
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
-<div class="bg-illustration"></div>
+  <div class="bg-illustration"></div>
+
   <header class="topbar">
     <div class="logo">
       <img src="assets/logo.png" alt="TechSource Solutions" />
     </div>
+
     <nav class="nav">
       <a href="#resumen">Resumen</a>
       <a href="#historial">Historial</a>
       <a href="#catalogo">Catálogo</a>
       <a href="#cotizaciones">Cotizaciones</a>
     </nav>
+
     <div class="topbar-right">
       <span id="ultima-sync">Última sync: --</span>
       <button class="btn-primary">Nueva cotización</button>
@@ -42,22 +48,25 @@
         <h3>Productos vigentes</h3>
         <p id="kpi-vigentes">--</p>
       </div>
+
       <div class="card kpi">
         <h3>Proveedores activos</h3>
         <p id="kpi-proveedores">--</p>
       </div>
+
       <div class="card kpi highlight">
         <h3>Cambios detectados</h3>
         <p id="kpi-cambios">--</p>
       </div>
+
       <div class="card kpi">
-        <h3>Última sincronización</h3>
-        <p id="kpi-sync">--</p>
+        <h3>Cotizaciones realizadas</h3>
+        <p id="kpi-cotizaciones">--</p>
       </div>
     </section>
 
     <section class="grid-two">
-      <div class="card">
+      <div class="card" id="bloque-cambios">
         <h2>Últimos cambios detectados</h2>
         <div id="tabla-cambios"></div>
       </div>
@@ -83,5 +92,4 @@
   <script src="js/charts.js"></script>
   <script src="js/dashboard.js"></script>
 </body>
-
 </html>
