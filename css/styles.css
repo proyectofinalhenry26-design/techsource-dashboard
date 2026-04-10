@@ -429,3 +429,52 @@ h2 {
     height: 38px;
   }
 }
+
+
+/* CONTENEDORES ALINEADOS */
+.grid-two {
+  display: grid;
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 14px;
+  align-items: stretch; /* 🔥 clave */
+}
+
+/* ALTURA UNIFORME */
+#bloque-cambios,
+#historial {
+  height: 260px; /* 🔥 ajusta aquí si quieres más pequeño */
+  display: flex;
+  flex-direction: column;
+}
+
+/* CONTENIDO INTERNO */
+#bloque-cambios .card,
+#historial.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TABLA CON SCROLL */
+#tabla-cambios {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 100%;
+  padding-right: 4px;
+}
+
+/* SCROLL BONITO */
+#tabla-cambios::-webkit-scrollbar {
+  width: 6px;
+}
+
+#tabla-cambios::-webkit-scrollbar-thumb {
+  background: rgba(120, 150, 220, 0.4);
+  border-radius: 10px;
+}
+
+/* GRÁFICA OCUPA TODO */
+#chart {
+  flex: 1;
+  height: 100% !important;
+}
