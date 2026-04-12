@@ -553,3 +553,58 @@ h2 {
 }
 
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.link-ver {
+  font-size: 0.85rem;
+  color: #2f6fed;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link-ver:hover {
+  text-decoration: underline;
+}
+
+/* SCROLL CAMBIOS */
+.card-scroll {
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-scroll #tabla-cambios {
+  overflow-y: auto;
+}
+
+/* GRAFICA MISMA ALTURA */
+.card-fixed {
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+#chart {
+  flex: 1;
+}
+
+/* CTA */
+.card-center {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.card-center p {
+  color: #6b7c98;
+  margin: 10px 0 20px;
+}
+
+.btn-large {
+  padding: 14px 22px;
+  font-size: 1rem;
+}

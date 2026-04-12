@@ -14,9 +14,11 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
+
 <body>
   <div class="bg-illustration"></div>
 
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="logo">
       <img src="assets/logo.png" alt="TechSource Solutions" />
@@ -35,14 +37,18 @@
     </div>
   </header>
 
+  <!-- CONTENIDO -->
   <main class="container">
-    <section class="hero" id="resumen">
+
+    <!-- HERO -->
+    <section class="hero">
       <div class="hero-content">
         <h1>Supplier Sync & Smart Pricing Control Center</h1>
         <p>Monitorea proveedores, detecta cambios de precio y gestiona cotizaciones en tiempo real.</p>
       </div>
     </section>
 
+    <!-- KPIs -->
     <section class="kpis">
       <div class="card kpi">
         <h3>Productos vigentes</h3>
@@ -65,27 +71,37 @@
       </div>
     </section>
 
+    <!-- GRID PRINCIPAL -->
     <section class="grid-two">
-      <div class="card" id="bloque-cambios">
-        <h2>Últimos cambios detectados</h2>
+
+      <!-- CAMBIOS -->
+      <div class="card card-scroll">
+        <div class="card-header">
+          <h2>Últimos cambios detectados</h2>
+          <a href="historial.html" class="link-ver">Ver todo</a>
+        </div>
+
         <div id="tabla-cambios"></div>
       </div>
 
-      <div class="card" id="historial">
+      <!-- GRAFICA -->
+      <div class="card card-fixed">
         <h2>Historial de precios</h2>
         <div id="chart"></div>
       </div>
+
     </section>
 
-    <section class="card" id="catalogo">
-      <h2>Catálogo vigente</h2>
-      <div id="tabla-catalogo"></div>
+    <!-- ACCION -->
+    <section class="card card-center">
+      <h2>Explorar catálogo completo</h2>
+      <p>Accede al catálogo con filtros avanzados por categoría, proveedor y búsqueda inteligente.</p>
+
+      <a href="catalogo.html" class="btn-primary btn-large">
+        Ver catálogo completo
+      </a>
     </section>
 
-    <section class="card" id="cotizaciones">
-      <h2>Cotizaciones</h2>
-      <p>Módulo en construcción.</p>
-    </section>
   </main>
 
   <script src="js/supabase.js"></script>
