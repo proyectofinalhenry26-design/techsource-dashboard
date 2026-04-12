@@ -393,12 +393,12 @@ h2 {
 }
 
 .up {
-  color: #d73a49;
+  color: #dc2626; /* rojo */
   font-weight: 800;
 }
 
 .down {
-  color: #159957;
+  color: #16a34a; /* verde */
   font-weight: 800;
 }
 

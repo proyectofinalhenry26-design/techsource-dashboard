@@ -71,20 +71,22 @@ function renderCambios(rows) {
         </tr>
       </thead>
       <tbody>
-        ${rows.map(r => {
-          const diff = Number(r.precio_nuevo) - Number(r.precio_anterior);
-          const cls = diff >= 0 ? "up" : "down";
-          const sign = diff >= 0 ? "▲ +" : "▼ ";
-          return `
-            <tr>
-              <td>${r.sku ?? ""}</td>
-              <td>${r.nombre ?? ""}</td>
-              <td>${r.precio_anterior ?? ""}</td>
-              <td>${r.precio_nuevo ?? ""}</td>
-              <td class="${cls}">${sign}${Math.abs(diff).toFixed(2)}</td>
-            </tr>
-          `;
-        }).join("")}
+${rows.map(r => {
+  const diff = Number(r.precio_nuevo) - Number(r.precio_anterior);
+  const cls = diff > 0 ? "up" : diff < 0 ? "down" : "";
+  const arrow = diff > 0 ? "▲" : diff < 0 ? "▼" : "•";
+
+  return `
+    <tr>
+      <td>${r.sku ?? ""}</td>
+      <td>${r.nombre ?? ""}</td>
+      <td>${r.precio_anterior ?? ""}</td>
+      <td>${r.precio_nuevo ?? ""}</td>
+      <td class="${cls}">${arrow} ${Math.abs(diff).toFixed(2)}</td>
+    </tr>
+  `;
+}).join("")}
+
       </tbody>
     </table>
   `;
