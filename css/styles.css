@@ -392,13 +392,13 @@ h2 {
   color: #4e5f79;
 }
 
-.up {
-  color: #dc2626; /* rojo */
+.table tbody td.up {
+  color: #dc2626 !important; /* rojo = sube */
   font-weight: 800;
 }
 
-.down {
-  color: #16a34a; /* verde */
+.table tbody td.down {
+  color: #16a34a !important; /* verde = baja */
   font-weight: 800;
 }
 
