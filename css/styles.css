@@ -695,3 +695,41 @@ h2 {
     grid-template-columns: 1fr;
   }
 }
+
+.filtros-cotizaciones {
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+}
+
+.table-cotizaciones tbody td {
+  white-space: nowrap;
+}
+
+.btn-icon {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.btn-icon:hover {
+  background: rgba(47, 111, 237, 0.08);
+}
+
+.badge-yellow {
+  background: #fff3cd;
+  color: #9a6700;
+}
+
+.badge-red {
+  background: #fde2e1;
+  color: #b42318;
+}
+
+@media (max-width: 900px) {
+  .filtros-cotizaciones {
+    grid-template-columns: 1fr;
+  }
+}
+

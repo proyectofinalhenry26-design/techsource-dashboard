@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cotizaciones | TechSource Solutions</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="bg-illustration"></div>
+
+  <header class="topbar">
+    <div class="logo">
+      <img src="assets/logo.png" alt="TechSource Solutions" />
+    </div>
+
+    <nav class="nav">
+      <a href="index.html">Resumen</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="historial.html">Historial</a>
+      <a href="cotizaciones.html">Cotizaciones</a>
+    </nav>
+
+    <div class="topbar-right">
+      <span id="ultima-sync">Última sync: --</span>
+      <button class="btn-primary">Nueva cotización</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h1 class="page-title">Cotizaciones Emitidas</h1>
+      <p class="page-subtitle">Historial de cotizaciones generadas</p>
+    </section>
+
+    <section class="card filters-card">
+      <div class="filtros-grid filtros-cotizaciones">
+        <input
+          type="text"
+          id="buscar-cotizacion"
+          class="input-filtro"
+          placeholder="Buscar por cliente o ID..."
+        >
+
+        <select id="filtro-validacion-cotizacion" class="input-filtro">
+          <option value="">Todos</option>
+          <option value="vigentes">Precios vigentes</option>
+          <option value="verificacion">Requiere verificación</option>
+        </select>
+
+        <input type="date" id="filtro-desde" class="input-filtro" />
+        <input type="date" id="filtro-hasta" class="input-filtro" />
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title" id="cotizaciones-count">0 cotización(es) encontrada(s)</h2>
+      <div id="tabla-cotizaciones"></div>
+    </section>
+  </main>
+
+  <script src="js/supabase.js"></script>
+  <script src="js/cotizaciones.js"></script>
+</body>
+</html>
