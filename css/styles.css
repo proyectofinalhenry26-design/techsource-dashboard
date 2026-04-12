@@ -608,3 +608,90 @@ h2 {
   padding: 14px 22px;
   font-size: 1rem;
 }
+
+
+.filtros-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 14px;
+}
+
+.filtros-historial {
+  grid-template-columns: 1.6fr 1fr 1fr;
+}
+
+.input-filtro {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d9e3f0;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.92);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: #23395d;
+  outline: none;
+}
+
+.input-filtro:focus {
+  border-color: #8fb3ff;
+  box-shadow: 0 0 0 3px rgba(47,111,237,0.08);
+}
+
+.page-title {
+  margin: 0 0 6px;
+  font-size: 1.8rem;
+  line-height: 1.1;
+  color: #1d315d;
+  font-weight: 800;
+}
+
+.page-subtitle {
+  margin: 0;
+  color: #6a7d9c;
+  font-size: 0.95rem;
+}
+
+.filters-card {
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+
+.historial-chart-card {
+  margin-bottom: 14px;
+}
+
+.historial-table-card {
+  margin-bottom: 14px;
+}
+
+.section-title {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+  color: #1d315d;
+  font-weight: 800;
+}
+
+.tabla-wrapper {
+  overflow-x: auto;
+}
+
+.table-historial tbody td {
+  white-space: nowrap;
+}
+
+.badge-green {
+  background: #d7f3e3;
+  color: #177d48;
+}
+
+.badge-blue-soft {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .filtros-grid,
+  .filtros-historial {
+    grid-template-columns: 1fr;
+  }
+}
