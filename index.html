@@ -19,23 +19,33 @@
   <div class="bg-illustration"></div>
 
   <!-- TOPBAR -->
-  <header class="topbar">
+<header class="topbar">
+  <div class="logo-wrap">
     <div class="logo">
       <img src="assets/logo.png" alt="TechSource Solutions" />
     </div>
-
-    <nav class="nav">
-      <a href="index.html">Resumen</a>
-      <a href="catalogo.html">Catálogo</a>
-      <a href="historial.html">Historial</a>
-      <a href="cotizaciones.html">Cotizaciones</a>
-    </nav>
-
-    <div class="topbar-right">
-      <span id="ultima-sync">Última sync: --</span>
-      <button class="btn-primary">Nueva cotización</button>
+    <div class="brand-text">
+      <strong>TechSource</strong>
+      <span>Supplier Intelligence</span>
     </div>
-  </header>
+  </div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-link active">Resumen</a>
+  <a href="catalogo.html" class="nav-link">Catálogo</a>
+  <a href="historial.html" class="nav-link">Historial</a>
+  <a href="cotizaciones.html" class="nav-link">Cotizaciones</a>
+</nav>
+
+  <div class="topbar-right">
+    <div class="sync-pill">
+      <span class="sync-icon">◔</span>
+      <span id="ultima-sync">Última sync: --</span>
+    </div>
+
+    <button class="btn-primary btn-topbar">+ Nueva cotización</button>
+  </div>
+</header>
 
   <!-- CONTENIDO -->
   <main class="container">
