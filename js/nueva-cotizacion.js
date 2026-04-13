@@ -266,88 +266,224 @@ function mostrarResultado() {
   }
 }
 
+
+
+
 function descargarPdfCotizacion() {
   if (!cotizacionGuardada) return;
 
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+  const doc = new jsPDF("p", "mm", "a4");
 
-  let y = 18;
-  doc.setFontSize(18);
-  doc.text("TechSource Solutions", 14, y);
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 14;
+  const contentWidth = pageWidth - margin * 2;
 
-  y += 10;
-  doc.setFontSize(16);
-  doc.text("Cotización", 14, y);
+  const colors = {
+    primary: [29, 49, 93],        // azul oscuro
+    secondary: [47, 111, 237],    // azul marca
+    lightBlue: [232, 239, 249],   // azul claro
+    border: [220, 228, 240],      // borde
+    text: [35, 57, 93],           // texto
+    muted: [107, 124, 152],       // gris texto
+    successBg: [215, 243, 227],   // verde suave
+    successText: [23, 125, 72],
+    warnBg: [255, 247, 232],      // naranja suave
+    warnBorder: [242, 192, 120],
+    warnText: [146, 91, 5]
+  };
 
-  y += 8;
-  doc.setFontSize(10);
-  doc.text(`ID: ${cotizacionGuardada.id}`, 14, y);
+  let y = 16;
 
-  y += 6;
-  doc.text(`Fecha de emisión: ${new Date(cotizacionGuardada.fecha_creacion).toLocaleDateString("es-CO")}`, 14, y);
-
-  y += 12;
-  doc.setFontSize(12);
-  doc.text("Datos del Cliente", 14, y);
-
-  y += 7;
-  doc.setFontSize(10);
-  doc.text(`Nombre: ${cotizacionGuardada.nombre_cliente}`, 14, y);
-  y += 6;
-  doc.text(`Email: ${cotizacionGuardada.email_cliente}`, 14, y);
-
-  y += 12;
-  doc.setFontSize(10);
-  doc.text("Producto", 14, y);
-  doc.text("Categoría", 65, y);
-  doc.text("Proveedor", 100, y);
-  doc.text("Precio Unit.", 140, y);
-  doc.text("Cant.", 170, y);
-  doc.text("Subtotal", 185, y);
-
-  y += 6;
-
-  const productosNoVigentes = [];
-
-  cotizacionGuardada.productos.forEach(p => {
-    if (y > 260) {
-      doc.addPage();
-      y = 20;
-    }
-
-    doc.text(`${p.precio_vigente ? "" : "⚠ "}${p.nombre}`, 14, y);
-    doc.text(String(p.categoria || ""), 65, y);
-    doc.text(String(p.proveedor || ""), 100, y);
-    doc.text(`$${Number(p.precio_unitario).toFixed(2)} ${p.moneda || ""}`, 140, y);
-    doc.text(String(p.cantidad), 170, y);
-    doc.text(`$${Number(p.subtotal).toFixed(2)} ${p.moneda || ""}`, 185, y);
-
-    if (!p.precio_vigente) productosNoVigentes.push(p.nombre);
-    y += 8;
-  });
-
-  y += 8;
-  doc.setFontSize(12);
-  doc.text(`TOTAL: $${Number(cotizacionGuardada.total).toFixed(2)}`, 14, y);
-
-  y += 12;
-  doc.setFontSize(10);
-
-  if (productosNoVigentes.length) {
-    doc.text("Nota: Algunos precios en esta cotización fueron actualizados hace más de 48 horas.", 14, y);
-    y += 6;
-    doc.text("Se recomienda confirmar con el proveedor antes de proceder.", 14, y);
-    y += 6;
-    doc.text(`Productos con precios pendientes de actualización: ${productosNoVigentes.join(", ")}.`, 14, y);
-  } else {
-    doc.text("Precios vigentes al momento de la emisión. Validez: 48 horas.", 14, y);
+  function setText(color = colors.text, size = 10, style = "normal") {
+    doc.setTextColor(...color);
+    doc.setFont("helvetica", style);
+    doc.setFontSize(size);
   }
 
-  y += 12;
-  doc.text(`Generado: ${new Date().toLocaleString("es-CO")}`, 14, y);
+  function roundRect(x, y, w, h, fillColor = null, drawColor = colors.border) {
+    if (fillColor) {
+      doc.setFillColor(...fillColor);
+      doc.setDrawColor(...drawColor);
+      doc.roundedRect(x, y, w, h, 3, 3, "FD");
+    } else {
+      doc.setDrawColor(...drawColor);
+      doc.roundedRect(x, y, w, h, 3, 3, "S");
+    }
+  }
+
+  function textLine(label, value, x, yPos, labelWidth = 28) {
+    setText(colors.muted, 10, "bold");
+    doc.text(label, x, yPos);
+    setText(colors.text, 10, "normal");
+    doc.text(value || "", x + labelWidth, yPos);
+  }
+
+  function money(value, moneda = "USD") {
+    return `$${Number(value || 0).toFixed(2)} ${moneda}`;
+  }
+
+  function formatDateLong(fecha) {
+    return new Date(fecha).toLocaleDateString("es-CO", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+  }
+
+  function ensureSpace(required) {
+    const pageHeight = doc.internal.pageSize.getHeight();
+    if (y + required > pageHeight - 18) {
+      doc.addPage();
+      y = 16;
+    }
+  }
+
+  const productos = Array.isArray(cotizacionGuardada.productos)
+    ? cotizacionGuardada.productos
+    : [];
+
+  const productosNoVigentes = productos.filter(p => p.precio_vigente === false);
+
+  /* HEADER */
+  roundRect(margin, y, contentWidth, 24, [248, 251, 255], colors.border);
+
+  try {
+    doc.addImage("assets/logo.png", "PNG", margin + 4, y + 3, 28, 18);
+  } catch (e) {
+    setText(colors.primary, 16, "bold");
+    doc.text("TechSource Solutions", margin + 4, y + 11);
+  }
+
+  setText(colors.primary, 16, "bold");
+  doc.text("Cotización", margin + 38, y + 10);
+
+  setText(colors.muted, 9, "normal");
+  doc.text(`ID: ${cotizacionGuardada.id}`, margin + 38, y + 16);
+  doc.text(`Fecha de emisión: ${formatDateLong(cotizacionGuardada.fecha_creacion)}`, margin + 38, y + 21);
+
+  y += 32;
+
+  /* DATOS CLIENTE */
+  ensureSpace(28);
+  roundRect(margin, y, contentWidth, 24, [255, 255, 255], colors.border);
+
+  setText(colors.primary, 12, "bold");
+  doc.text("Datos del cliente", margin + 4, y + 7);
+
+  textLine("Nombre:", cotizacionGuardada.nombre_cliente || "", margin + 4, y + 15);
+  textLine("Email:", cotizacionGuardada.email_cliente || "", margin + 4, y + 21);
+
+  y += 30;
+
+  /* TABLA */
+  ensureSpace(20);
+  setText(colors.primary, 12, "bold");
+  doc.text("Detalle de cotización", margin, y);
+  y += 5;
+
+  const cols = {
+    producto: margin,
+    categoria: margin + 58,
+    proveedor: margin + 86,
+    precio: margin + 122,
+    cantidad: margin + 150,
+    subtotal: margin + 168
+  };
+
+  const rowHeight = 10;
+
+  roundRect(margin, y, contentWidth, rowHeight, colors.lightBlue, colors.border);
+
+  setText(colors.primary, 9, "bold");
+  doc.text("Producto", cols.producto + 2, y + 6.5);
+  doc.text("Categoría", cols.categoria + 2, y + 6.5);
+  doc.text("Proveedor", cols.proveedor + 2, y + 6.5);
+  doc.text("Precio Unit.", cols.precio + 2, y + 6.5);
+  doc.text("Cant.", cols.cantidad + 2, y + 6.5);
+  doc.text("Subtotal", cols.subtotal + 2, y + 6.5);
+
+  y += rowHeight;
+
+  productos.forEach((p) => {
+    ensureSpace(12);
+
+    const stale = p.precio_vigente === false;
+    const rowBg = stale ? [255, 249, 240] : [255, 255, 255];
+
+    roundRect(margin, y, contentWidth, 12, rowBg, colors.border);
+
+    setText(stale ? colors.warnText : colors.text, 8.8, stale ? "bold" : "normal");
+    const nombre = `${stale ? "⚠ " : ""}${String(p.nombre || "").slice(0, 30)}`;
+    doc.text(nombre, cols.producto + 2, y + 7.5);
+
+    setText(colors.text, 8.5, "normal");
+    doc.text(String(p.categoria || "").slice(0, 16), cols.categoria + 2, y + 7.5);
+    doc.text(String(p.proveedor || "").slice(0, 18), cols.proveedor + 2, y + 7.5);
+
+    setText(stale ? colors.warnText : colors.text, 8.5, stale ? "bold" : "normal");
+    doc.text(money(p.precio_unitario, p.moneda), cols.precio + 2, y + 7.5);
+
+    setText(colors.text, 8.5, "normal");
+    doc.text(String(p.cantidad || 1), cols.cantidad + 2, y + 7.5);
+
+    setText(stale ? colors.warnText : colors.text, 8.5, stale ? "bold" : "normal");
+    doc.text(money(p.subtotal, p.moneda), cols.subtotal + 2, y + 7.5);
+
+    y += 12;
+  });
+
+  /* TOTAL */
+  ensureSpace(16);
+  roundRect(margin, y, contentWidth, 12, [248, 251, 255], colors.border);
+
+  setText(colors.primary, 11, "bold");
+  doc.text("TOTAL GENERAL", margin + 122, y + 7.5);
+  doc.text(money(cotizacionGuardada.total, "USD"), margin + 168, y + 7.5);
+
+  y += 18;
+
+  /* AVISO */
+  if (productosNoVigentes.length) {
+    ensureSpace(28);
+    roundRect(margin, y, contentWidth, 24, colors.warnBg, colors.warnBorder);
+
+    setText(colors.warnText, 10, "bold");
+    doc.text("⚠ Atención", margin + 4, y + 7);
+
+    setText(colors.warnText, 9, "normal");
+    const nota1 = "Algunos precios en esta cotización fueron actualizados hace más de 48 horas.";
+    const nota2 = "Se recomienda confirmar con el proveedor antes de proceder.";
+    const nota3 = `Productos pendientes de actualización: ${productosNoVigentes.map(p => p.nombre).join(", ")}.`;
+
+    doc.text(doc.splitTextToSize(nota1, contentWidth - 10), margin + 4, y + 13);
+    doc.text(doc.splitTextToSize(nota2, contentWidth - 10), margin + 4, y + 18);
+    y += 26;
+
+    const extraLines = doc.splitTextToSize(nota3, contentWidth - 10);
+    roundRect(margin, y, contentWidth, 8 + extraLines.length * 4.5, colors.warnBg, colors.warnBorder);
+    doc.text(extraLines, margin + 4, y + 7);
+    y += 10 + extraLines.length * 4.5;
+  } else {
+    ensureSpace(16);
+    roundRect(margin, y, contentWidth, 14, colors.successBg, colors.border);
+    setText(colors.successText, 9, "bold");
+    doc.text("✓ Precios vigentes al momento de la emisión. Validez: 48 horas.", margin + 4, y + 8.5);
+    y += 20;
+  }
+
+  /* FOOTER */
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const footerY = pageHeight - 16;
+
+  setText(colors.muted, 8, "normal");
+  doc.text("Cotización generada automáticamente por TechSource Solutions", margin, footerY - 4);
+  doc.text(`Generado: ${new Date().toLocaleString("es-CO")}`, margin, footerY);
 
   doc.save(`Cotizacion_TechSource_${cotizacionGuardada.id}.pdf`);
 }
+
+
+
 
 document.addEventListener("DOMContentLoaded", initNuevaCotizacion);
