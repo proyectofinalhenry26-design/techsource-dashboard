@@ -175,33 +175,73 @@ function verDetalleCotizacion(raw) {
   const data = JSON.parse(raw);
 
   let productosHtml = "";
+  let hayAntiguos = false;
+
   if (Array.isArray(data.productos)) {
     productosHtml = `
-      <ul style="padding-left:18px; margin:8px 0;">
-        ${data.productos.map(p => `
-          <li>
-            ${p.nombre || "Producto"} - ${p.moneda || ""} ${p.precio || ""}
-          </li>
-        `).join("")}
-      </ul>
+      <table style="width:100%; border-collapse:collapse; margin-top:12px;">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">Producto</th>
+            <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">Proveedor</th>
+            <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">Precio Unit.</th>
+            <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">Cantidad</th>
+            <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.productos.map(p => {
+            const stale = p.precio_vigente === false;
+            if (stale) hayAntiguos = true;
+
+            return `
+              <tr>
+                <td style="padding:8px; border-bottom:1px solid #eee;">${p.nombre}</td>
+                <td style="padding:8px; border-bottom:1px solid #eee;">${p.proveedor || ""}</td>
+                <td style="padding:8px; border-bottom:1px solid #eee; color:${stale ? "#E67E22" : "#23395d"}; font-weight:${stale ? "700" : "500"};">
+                  ${stale ? "⚠ " : ""}$${Number(p.precio_unitario || 0).toFixed(2)}
+                </td>
+                <td style="padding:8px; border-bottom:1px solid #eee;">${p.cantidad || 1}</td>
+                <td style="padding:8px; border-bottom:1px solid #eee; color:${stale ? "#E67E22" : "#23395d"}; font-weight:${stale ? "700" : "500"};">
+                  $${Number(p.subtotal || 0).toFixed(2)}
+                </td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+      ${hayAntiguos ? `
+        <p style="margin-top:14px; color:#E67E22; font-size:0.92rem; font-weight:600;">
+          Los productos marcados en naranja tenían precios con más de 48 horas de antigüedad al momento de emitir la cotización.
+        </p>
+      ` : ""}
     `;
   } else {
     productosHtml = "<p>No hay detalle de productos disponible.</p>";
   }
 
-  const mensaje = `
-Cliente: ${data.nombre_cliente || ""}
-Email: ${data.email_cliente || ""}
-Estado: ${data.estado || ""}
-Total: ${formatearMoneda(data.total)}
-
-Productos:
-${Array.isArray(data.productos)
-  ? data.productos.map(p => `- ${p.nombre || "Producto"} (${p.moneda || ""} ${p.precio || ""})`).join("\n")
-  : "No disponible"}
-  `;
-
-  alert(mensaje);
+  const nuevaVentana = window.open("", "_blank", "width=1000,height=700");
+  nuevaVentana.document.write(`
+    <html>
+      <head>
+        <title>Detalle de cotización</title>
+        <style>
+          body { font-family: Inter, Arial, sans-serif; padding: 24px; color: #1d315d; }
+          h1 { margin-bottom: 8px; }
+          p { margin: 6px 0; }
+        </style>
+      </head>
+      <body>
+        <h1>Detalle de cotización</h1>
+        <p><strong>Cliente:</strong> ${data.nombre_cliente || ""}</p>
+        <p><strong>Email:</strong> ${data.email_cliente || ""}</p>
+        <p><strong>Estado:</strong> ${data.estado || ""}</p>
+        <p><strong>Total:</strong> ${formatearMoneda(data.total)}</p>
+        ${productosHtml}
+      </body>
+    </html>
+  `);
+  nuevaVentana.document.close();
 }
 
 document.addEventListener("DOMContentLoaded", cargarCotizacionesPage);
