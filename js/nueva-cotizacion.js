@@ -4,7 +4,7 @@ let productosCotizacion = [];
 let cotizacionGuardada = null;
 
 // CAMBIA ESTA URL POR TU WEBHOOK REAL
-const N8N_WEBHOOK_COTIZACION = "https://n8n.srv1164728.hstgr.cloud/webhook/generar-cotizacion";
+const N8N_WEBHOOK_COTIZACION = "https://n8n.srv1164728.hstgr.cloud/webhook-test/generar-cotizacion";
 
 async function initNuevaCotizacion() {
   const { data, error } = await supabaseClient
