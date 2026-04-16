@@ -3,6 +3,9 @@ let productosFiltrados = [];
 let productosCotizacion = [];
 let cotizacionGuardada = null;
 
+// CAMBIA ESTA URL POR TU WEBHOOK REAL
+const N8N_WEBHOOK_COTIZACION = "https://n8n.srv1164728.hstgr.cloud/webhook/generar-cotizacion";
+
 async function initNuevaCotizacion() {
   const { data, error } = await supabaseClient
     .from("catalogo_proveedores")
@@ -24,7 +27,7 @@ async function initNuevaCotizacion() {
 
   document.getElementById("buscar-producto").addEventListener("input", filtrarProductos);
   document.getElementById("select-producto").addEventListener("change", agregarProductoSeleccionado);
-  document.getElementById("btn-generar-cotizacion").addEventListener("click", guardarCotizacion);
+  document.getElementById("btn-generar-cotizacion").addEventListener("click", guardarCotizacionEnN8N);
   document.getElementById("btn-descargar-pdf").addEventListener("click", descargarPdfCotizacion);
 }
 
@@ -53,6 +56,8 @@ function filtrarProductos() {
 
 function renderSelectProductos(rows) {
   const select = document.getElementById("select-producto");
+  if (!select) return;
+
   select.innerHTML = `<option value="">Seleccionar producto</option>`;
 
   rows.forEach(p => {
@@ -71,20 +76,22 @@ function agregarProductoSeleccionado() {
   if (!producto) return;
 
   const existente = productosCotizacion.find(p => String(p.producto_id) === String(producto.id));
+
   if (existente) {
     existente.cantidad += 1;
     existente.subtotal = existente.cantidad * existente.precio_unitario;
   } else {
     const vigente = esPrecioVigente(producto.fecha_sync);
+
     productosCotizacion.push({
-      producto_id: producto.id,
       nombre: producto.nombre,
-      categoria: producto.categoria,
-      proveedor: producto.proveedor,
-      precio_unitario: Number(producto.precio),
-      moneda: producto.moneda || "USD",
       cantidad: 1,
       subtotal: Number(producto.precio),
+      categoria: producto.categoria,
+      proveedor: producto.proveedor,
+      producto_id: producto.id,
+      precio_unitario: Number(producto.precio),
+      moneda: producto.moneda || "USD",
       precio_vigente: vigente,
       fecha_sync: producto.fecha_sync
     });
@@ -97,15 +104,19 @@ function agregarProductoSeleccionado() {
 
 function esPrecioVigente(fechaSync) {
   if (!fechaSync) return false;
+
   const ahora = new Date();
   const fecha = new Date(fechaSync);
   const diffHoras = (ahora - fecha) / (1000 * 60 * 60);
+
   return diffHoras <= 48;
 }
 
 function renderAdvertencia() {
   const alerta = document.getElementById("alerta-precios");
   const texto = document.getElementById("alerta-precios-texto");
+
+  if (!alerta || !texto) return;
 
   const productosAntiguos = productosCotizacion.filter(p => !p.precio_vigente);
 
@@ -122,12 +133,12 @@ function renderAdvertencia() {
     .reverse()[0];
 
   texto.innerHTML = `⚠ <strong>Atención:</strong> el precio de <strong>${nombres}</strong> fue actualizado hace más de 48 horas y podría no estar vigente. Último sync: ${ultimo ? new Date(ultimo).toLocaleString("es-CO") : "--"}.`;
-
   alerta.style.display = "block";
 }
 
 function renderDetalleCotizacion() {
   const el = document.getElementById("detalle-cotizacion");
+  if (!el) return;
 
   if (!productosCotizacion.length) {
     el.innerHTML = `<p style="color:#6b7c98;">Aún no has agregado productos.</p>`;
@@ -158,14 +169,14 @@ function renderDetalleCotizacion() {
               </td>
               <td><span class="badge badge-blue">${p.proveedor}</span></td>
               <td class="${!p.precio_vigente ? 'stale-price' : ''}">
-                $${p.precio_unitario.toFixed(2)}
+                $${Number(p.precio_unitario).toFixed(2)}
                 ${!p.precio_vigente ? ' ⚠' : ''}
               </td>
               <td>
                 <input type="number" min="1" value="${p.cantidad}" class="qty-input" onchange="cambiarCantidad(${i}, this.value)">
               </td>
               <td class="${!p.precio_vigente ? 'stale-price' : ''}">
-                $${p.subtotal.toFixed(2)}
+                $${Number(p.subtotal).toFixed(2)}
               </td>
               <td>
                 <button class="btn-icon" onclick="eliminarProducto(${i})">🗑</button>
@@ -174,7 +185,7 @@ function renderDetalleCotizacion() {
           `).join("")}
           <tr>
             <td colspan="4" style="text-align:right;"><strong>Total General</strong></td>
-            <td><strong>$${total.toFixed(2)}</strong></td>
+            <td><strong>$${Number(total).toFixed(2)}</strong></td>
             <td></td>
           </tr>
         </tbody>
@@ -197,7 +208,7 @@ function eliminarProducto(index) {
   renderAdvertencia();
 }
 
-async function guardarCotizacion() {
+async function guardarCotizacionEnN8N() {
   const nombre = document.getElementById("cliente-nombre").value.trim();
   const email = document.getElementById("cliente-email").value.trim();
 
@@ -231,43 +242,70 @@ async function guardarCotizacion() {
     total: total,
     fecha_creacion: new Date().toISOString(),
     estado: "emitida",
-    precios_vigentes: todosVigentes
+    precios_vigentes: todosVigentes,
+    origen: "web_cotizador"
   };
 
-  const { data, error } = await supabaseClient
-    .from("cotizaciones")
-    .insert([payload])
-    .select()
-    .single();
+  try {
+    const response = await fetch(N8N_WEBHOOK_COTIZACION, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
 
-  if (error) {
-    console.error("Error guardando cotización:", error);
-    alert("No fue posible guardar la cotización.");
-    return;
+    if (!response.ok) {
+      throw new Error("n8n no respondió correctamente");
+    }
+
+    const resultado = await response.json();
+
+    if (!resultado.ok) {
+      throw new Error(resultado.mensaje || "No fue posible guardar la cotización");
+    }
+
+    cotizacionGuardada = {
+      id: resultado.cotizacion_id,
+      nombre_cliente: resultado.nombre_cliente,
+      email_cliente: resultado.email_cliente,
+      total: resultado.total,
+      fecha_creacion: resultado.fecha_creacion,
+      estado: resultado.estado,
+      precios_vigentes: resultado.precios_vigentes,
+      productos: resultado.productos
+    };
+
+    mostrarResultado();
+
+  } catch (error) {
+    console.error("Error en flujo n8n:", error);
+    alert("No fue posible generar la cotización.");
   }
-
-  cotizacionGuardada = data;
-  mostrarResultado();
 }
 
 function mostrarResultado() {
-  document.getElementById("detalle-cotizacion-card").style.display = "none";
-  document.getElementById("resultado-cotizacion").style.display = "block";
-
+  const detalleCard = document.getElementById("detalle-cotizacion-card");
+  const resultadoCard = document.getElementById("resultado-cotizacion");
   const texto = document.getElementById("resultado-texto");
-  texto.innerHTML = `La cotización para <strong>${cotizacionGuardada.nombre_cliente}</strong> ha sido guardada con el ID <code>${String(cotizacionGuardada.id).substring(0, 8)}</code>.`;
-
   const warning = document.getElementById("resultado-warning");
-  if (cotizacionGuardada.precios_vigentes === false) {
-    warning.style.display = "block";
-    warning.innerHTML = `⚠ Esta cotización contiene precios que fueron actualizados hace más de 48 horas. Se recomienda verificar con el proveedor.`;
-  } else {
-    warning.style.display = "none";
+
+  if (detalleCard) detalleCard.style.display = "none";
+  if (resultadoCard) resultadoCard.style.display = "block";
+
+  if (texto) {
+    texto.innerHTML = `La cotización para <strong>${cotizacionGuardada.nombre_cliente}</strong> ha sido guardada con el ID <code>${String(cotizacionGuardada.id).substring(0, 8)}</code>.`;
+  }
+
+  if (warning) {
+    if (cotizacionGuardada.precios_vigentes === false) {
+      warning.style.display = "block";
+      warning.innerHTML = `⚠ Esta cotización contiene precios que fueron actualizados hace más de 48 horas. Se recomienda verificar con el proveedor.`;
+    } else {
+      warning.style.display = "none";
+    }
   }
 }
-
-
-
 
 function descargarPdfCotizacion() {
   if (!cotizacionGuardada) return;
@@ -280,15 +318,15 @@ function descargarPdfCotizacion() {
   const contentWidth = pageWidth - margin * 2;
 
   const colors = {
-    primary: [29, 49, 93],        // azul oscuro
-    secondary: [47, 111, 237],    // azul marca
-    lightBlue: [232, 239, 249],   // azul claro
-    border: [220, 228, 240],      // borde
-    text: [35, 57, 93],           // texto
-    muted: [107, 124, 152],       // gris texto
-    successBg: [215, 243, 227],   // verde suave
+    primary: [29, 49, 93],
+    secondary: [47, 111, 237],
+    lightBlue: [232, 239, 249],
+    border: [220, 228, 240],
+    text: [35, 57, 93],
+    muted: [107, 124, 152],
+    successBg: [215, 243, 227],
     successText: [23, 125, 72],
-    warnBg: [255, 247, 232],      // naranja suave
+    warnBg: [255, 247, 232],
     warnBorder: [242, 192, 120],
     warnText: [146, 91, 5]
   };
@@ -345,26 +383,22 @@ function descargarPdfCotizacion() {
 
   const productosNoVigentes = productos.filter(p => p.precio_vigente === false);
 
-  /* HEADER */
   roundRect(margin, y, contentWidth, 24, [248, 251, 255], colors.border);
 
-  try {
-    doc.addImage("assets/logo.png", "PNG", margin + 4, y + 3, 28, 18);
-  } catch (e) {
-    setText(colors.primary, 16, "bold");
-    doc.text("TechSource Solutions", margin + 4, y + 11);
-  }
+  setText(colors.primary, 16, "bold");
+  doc.text("TechSource Solutions", margin + 4, y + 10);
+  setText(colors.muted, 8, "normal");
+  doc.text("Supplier Sync & Smart Pricing", margin + 4, y + 16);
 
   setText(colors.primary, 16, "bold");
-  doc.text("Cotización", margin + 38, y + 10);
+  doc.text("Cotización", margin + 120, y + 10);
 
   setText(colors.muted, 9, "normal");
-  doc.text(`ID: ${cotizacionGuardada.id}`, margin + 38, y + 16);
-  doc.text(`Fecha de emisión: ${formatDateLong(cotizacionGuardada.fecha_creacion)}`, margin + 38, y + 21);
+  doc.text(`ID: ${cotizacionGuardada.id}`, margin + 120, y + 16);
+  doc.text(`Fecha: ${formatDateLong(cotizacionGuardada.fecha_creacion)}`, margin + 120, y + 21);
 
   y += 32;
 
-  /* DATOS CLIENTE */
   ensureSpace(28);
   roundRect(margin, y, contentWidth, 24, [255, 255, 255], colors.border);
 
@@ -376,7 +410,6 @@ function descargarPdfCotizacion() {
 
   y += 30;
 
-  /* TABLA */
   ensureSpace(20);
   setText(colors.primary, 12, "bold");
   doc.text("Detalle de cotización", margin, y);
@@ -414,8 +447,7 @@ function descargarPdfCotizacion() {
     roundRect(margin, y, contentWidth, 12, rowBg, colors.border);
 
     setText(stale ? colors.warnText : colors.text, 8.8, stale ? "bold" : "normal");
-    const nombre = `${stale ? "⚠ " : ""}${String(p.nombre || "").slice(0, 30)}`;
-    doc.text(nombre, cols.producto + 2, y + 7.5);
+    doc.text(`${stale ? "⚠ " : ""}${String(p.nombre || "").slice(0, 28)}`, cols.producto + 2, y + 7.5);
 
     setText(colors.text, 8.5, "normal");
     doc.text(String(p.categoria || "").slice(0, 16), cols.categoria + 2, y + 7.5);
@@ -433,7 +465,6 @@ function descargarPdfCotizacion() {
     y += 12;
   });
 
-  /* TOTAL */
   ensureSpace(16);
   roundRect(margin, y, contentWidth, 12, [248, 251, 255], colors.border);
 
@@ -443,7 +474,6 @@ function descargarPdfCotizacion() {
 
   y += 18;
 
-  /* AVISO */
   if (productosNoVigentes.length) {
     ensureSpace(28);
     roundRect(margin, y, contentWidth, 24, colors.warnBg, colors.warnBorder);
@@ -452,18 +482,10 @@ function descargarPdfCotizacion() {
     doc.text("⚠ Atención", margin + 4, y + 7);
 
     setText(colors.warnText, 9, "normal");
-    const nota1 = "Algunos precios en esta cotización fueron actualizados hace más de 48 horas.";
-    const nota2 = "Se recomienda confirmar con el proveedor antes de proceder.";
-    const nota3 = `Productos pendientes de actualización: ${productosNoVigentes.map(p => p.nombre).join(", ")}.`;
+    doc.text("Algunos precios en esta cotización fueron actualizados hace más de 48 horas.", margin + 4, y + 13);
+    doc.text("Se recomienda confirmar con el proveedor antes de proceder.", margin + 4, y + 18);
 
-    doc.text(doc.splitTextToSize(nota1, contentWidth - 10), margin + 4, y + 13);
-    doc.text(doc.splitTextToSize(nota2, contentWidth - 10), margin + 4, y + 18);
-    y += 26;
-
-    const extraLines = doc.splitTextToSize(nota3, contentWidth - 10);
-    roundRect(margin, y, contentWidth, 8 + extraLines.length * 4.5, colors.warnBg, colors.warnBorder);
-    doc.text(extraLines, margin + 4, y + 7);
-    y += 10 + extraLines.length * 4.5;
+    y += 28;
   } else {
     ensureSpace(16);
     roundRect(margin, y, contentWidth, 14, colors.successBg, colors.border);
@@ -472,7 +494,6 @@ function descargarPdfCotizacion() {
     y += 20;
   }
 
-  /* FOOTER */
   const pageHeight = doc.internal.pageSize.getHeight();
   const footerY = pageHeight - 16;
 
@@ -482,8 +503,5 @@ function descargarPdfCotizacion() {
 
   doc.save(`Cotizacion_TechSource_${cotizacionGuardada.id}.pdf`);
 }
-
-
-
 
 document.addEventListener("DOMContentLoaded", initNuevaCotizacion);
