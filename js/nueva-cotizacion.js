@@ -25,10 +25,10 @@ async function initNuevaCotizacion() {
   renderSelectProductos(productosFiltrados);
   renderDetalleCotizacion();
 
-  document.getElementById("buscar-producto").addEventListener("input", filtrarProductos);
-  document.getElementById("select-producto").addEventListener("change", agregarProductoSeleccionado);
-  document.getElementById("btn-generar-cotizacion").addEventListener("click", guardarCotizacionEnN8N);
-  document.getElementById("btn-descargar-pdf").addEventListener("click", descargarPdfCotizacion);
+  document.getElementById("buscar-producto")?.addEventListener("input", filtrarProductos);
+  document.getElementById("select-producto")?.addEventListener("change", agregarProductoSeleccionado);
+  document.getElementById("btn-generar-cotizacion")?.addEventListener("click", guardarCotizacionEnN8N);
+  document.getElementById("btn-descargar-pdf")?.addEventListener("click", descargarPdfCotizacion);
 }
 
 function llenarUltimaSync() {
@@ -40,7 +40,7 @@ function llenarUltimaSync() {
 
   const el = document.getElementById("ultima-sync");
   if (el) {
-    el.textContent = `Última sync: ${ultimaSync ? new Date(ultimaSync).toLocaleString() : "--"}`;
+    el.textContent = `Última sync: ${ultimaSync ? new Date(ultimaSync).toLocaleString("es-CO") : "--"}`;
   }
 }
 
@@ -104,11 +104,9 @@ function agregarProductoSeleccionado() {
 
 function esPrecioVigente(fechaSync) {
   if (!fechaSync) return false;
-
   const ahora = new Date();
   const fecha = new Date(fechaSync);
   const diffHoras = (ahora - fecha) / (1000 * 60 * 60);
-
   return diffHoras <= 48;
 }
 
@@ -273,11 +271,11 @@ async function guardarCotizacionEnN8N() {
       fecha_creacion: resultado.fecha_creacion,
       estado: resultado.estado,
       precios_vigentes: resultado.precios_vigentes,
-      productos: resultado.productos
+      productos: resultado.productos,
+      cliente_id: resultado.cliente_id || null
     };
 
     mostrarResultado();
-
   } catch (error) {
     console.error("Error en flujo n8n:", error);
     alert("No fue posible generar la cotización.");
@@ -339,14 +337,14 @@ function descargarPdfCotizacion() {
     doc.setFontSize(size);
   }
 
-  function roundRect(x, y, w, h, fillColor = null, drawColor = colors.border) {
+  function roundRect(x, yPos, w, h, fillColor = null, drawColor = colors.border) {
     if (fillColor) {
       doc.setFillColor(...fillColor);
       doc.setDrawColor(...drawColor);
-      doc.roundedRect(x, y, w, h, 3, 3, "FD");
+      doc.roundedRect(x, yPos, w, h, 3, 3, "FD");
     } else {
       doc.setDrawColor(...drawColor);
-      doc.roundedRect(x, y, w, h, 3, 3, "S");
+      doc.roundedRect(x, yPos, w, h, 3, 3, "S");
     }
   }
 
@@ -354,7 +352,7 @@ function descargarPdfCotizacion() {
     setText(colors.muted, 10, "bold");
     doc.text(label, x, yPos);
     setText(colors.text, 10, "normal");
-    doc.text(value || "", x + labelWidth, yPos);
+    doc.text(String(value || ""), x + labelWidth, yPos);
   }
 
   function money(value, moneda = "USD") {
@@ -377,10 +375,7 @@ function descargarPdfCotizacion() {
     }
   }
 
-  const productos = Array.isArray(cotizacionGuardada.productos)
-    ? cotizacionGuardada.productos
-    : [];
-
+  const productos = Array.isArray(cotizacionGuardada.productos) ? cotizacionGuardada.productos : [];
   const productosNoVigentes = productos.filter(p => p.precio_vigente === false);
 
   roundRect(margin, y, contentWidth, 24, [248, 251, 255], colors.border);
@@ -405,8 +400,8 @@ function descargarPdfCotizacion() {
   setText(colors.primary, 12, "bold");
   doc.text("Datos del cliente", margin + 4, y + 7);
 
-  textLine("Nombre:", cotizacionGuardada.nombre_cliente || "", margin + 4, y + 15);
-  textLine("Email:", cotizacionGuardada.email_cliente || "", margin + 4, y + 21);
+  textLine("Nombre:", cotizacionGuardada.nombre_cliente, margin + 4, y + 15);
+  textLine("Email:", cotizacionGuardada.email_cliente, margin + 4, y + 21);
 
   y += 30;
 
@@ -424,9 +419,7 @@ function descargarPdfCotizacion() {
     subtotal: margin + 168
   };
 
-  const rowHeight = 10;
-
-  roundRect(margin, y, contentWidth, rowHeight, colors.lightBlue, colors.border);
+  roundRect(margin, y, contentWidth, 10, colors.lightBlue, colors.border);
 
   setText(colors.primary, 9, "bold");
   doc.text("Producto", cols.producto + 2, y + 6.5);
@@ -436,18 +429,24 @@ function descargarPdfCotizacion() {
   doc.text("Cant.", cols.cantidad + 2, y + 6.5);
   doc.text("Subtotal", cols.subtotal + 2, y + 6.5);
 
-  y += rowHeight;
+  y += 10;
 
   productos.forEach((p) => {
     ensureSpace(12);
-
     const stale = p.precio_vigente === false;
     const rowBg = stale ? [255, 249, 240] : [255, 255, 255];
 
     roundRect(margin, y, contentWidth, 12, rowBg, colors.border);
 
+    const nombreProducto = String(p.nombre || "").slice(0, 28);
+
     setText(stale ? colors.warnText : colors.text, 8.8, stale ? "bold" : "normal");
-    doc.text(`${stale ? "⚠ " : ""}${String(p.nombre || "").slice(0, 28)}`, cols.producto + 2, y + 7.5);
+    doc.text(nombreProducto, cols.producto + 2, y + 7.5);
+
+    if (stale) {
+      setText(colors.warnText, 8, "bold");
+      doc.text("(!)", cols.producto + 48, y + 7.5);
+    }
 
     setText(colors.text, 8.5, "normal");
     doc.text(String(p.categoria || "").slice(0, 16), cols.categoria + 2, y + 7.5);
@@ -479,7 +478,7 @@ function descargarPdfCotizacion() {
     roundRect(margin, y, contentWidth, 24, colors.warnBg, colors.warnBorder);
 
     setText(colors.warnText, 10, "bold");
-    doc.text("⚠ Atención", margin + 4, y + 7);
+    doc.text("Atencion", margin + 4, y + 7);
 
     setText(colors.warnText, 9, "normal");
     doc.text("Algunos precios en esta cotización fueron actualizados hace más de 48 horas.", margin + 4, y + 13);
@@ -490,7 +489,7 @@ function descargarPdfCotizacion() {
     ensureSpace(16);
     roundRect(margin, y, contentWidth, 14, colors.successBg, colors.border);
     setText(colors.successText, 9, "bold");
-    doc.text("✓ Precios vigentes al momento de la emisión. Validez: 48 horas.", margin + 4, y + 8.5);
+    doc.text("Precios vigentes al momento de la emisión. Validez: 48 horas.", margin + 4, y + 8.5);
     y += 20;
   }
 
