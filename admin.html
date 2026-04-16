@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Administrativo | TechSource Solutions</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="js/auth.js"></script>
+</head>
+<body>
+  <script>
+    requireAdmin();
+  </script>
+
+  <div class="bg-illustration"></div>
+
+  <header class="topbar">
+    <div class="logo">
+      <img src="assets/logo.png" alt="TechSource Solutions" />
+    </div>
+
+    <nav class="nav">
+      <a href="admin.html" class="nav-link active">Resumen</a>
+      <a href="catalogo.html" class="nav-link">Catálogo</a>
+      <a href="historial.html" class="nav-link">Historial</a>
+      <a href="cotizaciones.html" class="nav-link">Cotizaciones</a>
+    </nav>
+
+    <div class="topbar-right">
+      <div class="sync-pill">
+        <span class="sync-icon">◔</span>
+        <span id="ultima-sync">Última sync: --</span>
+      </div>
+      <a href="nueva-cotizacion.html" class="btn-primary btn-topbar">+ Nueva cotización</a>
+      <button id="btn-logout-admin" class="btn-secondary btn-topbar">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero" id="resumen">
+      <div class="hero-content">
+        <h1>Supplier Sync & Smart Pricing Control Center</h1>
+        <p>Monitorea proveedores, detecta cambios de precio y gestiona cotizaciones en tiempo real.</p>
+      </div>
+    </section>
+
+    <section class="kpis">
+      <div class="card kpi">
+        <h3>Productos vigentes</h3>
+        <p id="kpi-vigentes">--</p>
+      </div>
+      <div class="card kpi">
+        <h3>Proveedores activos</h3>
+        <p id="kpi-proveedores">--</p>
+      </div>
+      <div class="card kpi highlight">
+        <h3>Cambios detectados</h3>
+        <p id="kpi-cambios">--</p>
+      </div>
+      <div class="card kpi">
+        <h3>Cotizaciones realizadas</h3>
+        <p id="kpi-cotizaciones">--</p>
+      </div>
+    </section>
+
+    <section class="grid-two">
+      <div class="card">
+        <div class="card-title-row">
+          <h2>Últimos cambios detectados</h2>
+          <a href="historial.html" class="btn-link-mini">Ver todo</a>
+        </div>
+        <div id="tabla-cambios"></div>
+      </div>
+
+      <div class="card">
+        <h2>Historial de precios</h2>
+        <div id="chart"></div>
+      </div>
+    </section>
+
+    <section class="card cta-card">
+      <h2>Explorar catálogo completo</h2>
+      <p>Accede al catálogo con filtros avanzados por categoría, proveedor y búsqueda inteligente.</p>
+      <a href="catalogo.html" class="btn-secondary btn-topbar">Ver catálogo completo</a>
+    </section>
+  </main>
+
+  <script src="js/supabase.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script>
+    document.getElementById("btn-logout-admin")?.addEventListener("click", () => {
+      logoutAdmin();
+      window.location.href = "catalogo.html";
+    });
+  </script>
+</body>
+</html>
