@@ -10,61 +10,50 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/styles.css" />
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <div class="bg-illustration"></div>
 
-<header class="topbar">
-  <div class="logo">
-    <img src="assets/logo.png" alt="TechSource Solutions" />
-  </div>
-
-<nav class="nav">
-  <a href="index.html" class="nav-link">Resumen</a>
-  <a href="catalogo.html" class="nav-link active">Catálogo</a>
-  <a href="historial.html" class="nav-link">Historial</a>
-  <a href="cotizaciones.html" class="nav-link">Cotizaciones</a>
-</nav>
-
-  <div class="topbar-right">
-    <div class="sync-pill">
-      <span class="sync-icon">◔</span>
-      <span id="ultima-sync">Última sync: --</span>
+  <header class="topbar">
+    <div class="logo">
+      <img src="assets/logo.png" alt="TechSource Solutions" />
     </div>
 
-    <a href="nueva-cotizacion.html" class="btn-primary btn-topbar">+ Nueva cotización</a>
-  </div>
+    <nav class="nav">
+      <a href="catalogo.html" class="nav-link active">Catálogo</a>
+      <a href="nueva-cotizacion.html" class="nav-link">+ Nueva cotización</a>
+      <a href="historial-cotizaciones.html" class="nav-link">Historial Cotizaciones</a>
+      <a href="login.html" class="nav-link">Iniciar Sesión</a>
+    </nav>
 
-</header>
+    <div class="topbar-right">
+      <div class="sync-pill">
+        <span class="sync-icon">◔</span>
+        <span id="ultima-sync">Última sync: --</span>
+      </div>
+    </div>
+  </header>
 
   <main class="container">
-    <section class="card">
+    <section class="card page-header-card">
       <h1 class="page-title">Catálogo Vigente</h1>
-      <p class="page-subtitle" id="catalogo-resumen">0 productos</p>
+      <p class="page-subtitle" id="catalogo-subtitle">Cargando productos...</p>
     </section>
 
-    <section class="card filters-card">
-      <div class="filtros-grid">
-        <input
-          type="text"
-          id="buscar-catalogo"
-          class="input-filtro"
-          placeholder="Buscar por nombre de producto..."
-        >
-
+    <section class="card" style="margin-top:14px;">
+      <div class="filtros-grid filtros-catalogo">
+        <input id="buscar-catalogo" class="input-filtro" placeholder="Buscar por nombre de producto..." />
         <select id="filtro-categoria" class="input-filtro">
           <option value="">Todas las categorías</option>
         </select>
-
         <select id="filtro-proveedor" class="input-filtro">
           <option value="">Todos los proveedores</option>
         </select>
       </div>
     </section>
 
-    <section class="card">
+    <section class="card" style="margin-top:14px;">
       <div id="tabla-catalogo-full"></div>
     </section>
   </main>

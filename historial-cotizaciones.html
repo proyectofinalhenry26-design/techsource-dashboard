@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TechSource Solutions</title>
+  <title>Historial de cotizaciones | TechSource Solutions</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,9 +21,9 @@
     </div>
 
     <nav class="nav">
-      <a href="catalogo.html" class="nav-link active">Catálogo</a>
+      <a href="catalogo.html" class="nav-link">Catálogo</a>
       <a href="nueva-cotizacion.html" class="nav-link">+ Nueva cotización</a>
-      <a href="historial-cotizaciones.html" class="nav-link">Historial Cotizaciones</a>
+      <a href="historial-cotizaciones.html" class="nav-link active">Historial Cotizaciones</a>
       <a href="login.html" class="nav-link">Iniciar Sesión</a>
     </nav>
 
@@ -36,29 +36,32 @@
   </header>
 
   <main class="container">
-    <section class="card page-header-card">
-      <h1 class="page-title">Catálogo Vigente</h1>
-      <p class="page-subtitle" id="catalogo-subtitle">Cargando productos...</p>
+    <section class="card">
+      <h1 class="page-title">Historial de Cotizaciones</h1>
+      <p class="page-subtitle">Ingresa tu correo para consultar las cotizaciones generadas a tu nombre.</p>
     </section>
 
     <section class="card" style="margin-top:14px;">
-      <div class="filtros-grid filtros-catalogo">
-        <input id="buscar-catalogo" class="input-filtro" placeholder="Buscar por nombre de producto..." />
-        <select id="filtro-categoria" class="input-filtro">
-          <option value="">Todas las categorías</option>
-        </select>
-        <select id="filtro-proveedor" class="input-filtro">
-          <option value="">Todos los proveedores</option>
-        </select>
+      <div class="filtros-grid" style="grid-template-columns:1fr auto;">
+        <input
+          id="email-historial"
+          class="input-filtro"
+          type="email"
+          placeholder="Ingresa tu email"
+        />
+        <button id="btn-buscar-historial" class="btn-primary btn-topbar">Buscar</button>
       </div>
     </section>
 
-    <section class="card" style="margin-top:14px;">
-      <div id="tabla-catalogo-full"></div>
+    <section class="card" id="resultado-historial-card" style="margin-top:14px;">
+      <h2 class="section-title">Resultado</h2>
+      <div id="resultado-historial">
+        <p style="color:#6b7c98;">Aún no se ha realizado una búsqueda.</p>
+      </div>
     </section>
   </main>
 
   <script src="js/supabase.js"></script>
-  <script src="js/catalogo.js"></script>
+  <script src="js/historial-cotizaciones.js"></script>
 </body>
 </html>

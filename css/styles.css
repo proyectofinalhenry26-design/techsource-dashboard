@@ -937,3 +937,155 @@ h2 {
   text-decoration: none;
 }
 
+.badge-green {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: #d9f4e4;
+  color: #177d48;
+}
+
+.badge-orange {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: #fff1dd;
+  color: #e67e22;
+}
+
+.btn-link-mini {
+  border: none;
+  background: transparent;
+  color: #2f80ed;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.empty-state {
+  padding: 28px 12px;
+  text-align: center;
+  color: #6b7c98;
+}
+
+.empty-state h3 {
+  margin-bottom: 8px;
+  color: #1d315d;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 29, 51, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+}
+
+.modal-card {
+  width: min(900px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 22px 60px rgba(15, 33, 64, 0.28);
+  border: 1px solid #d9e3f0;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #ecf1f7;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #1d315d;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.btn-close {
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #5a6f92;
+}
+
+.login-card {
+  max-width: 560px;
+  margin: 40px auto 0;
+}
+
+.login-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.login-error {
+  color: #c43d3d;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.page-header-card {
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+.filtros-catalogo {
+  grid-template-columns: 1.6fr 1fr 1fr;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(111, 153, 245, 0.28);
+  background: #ffffff;
+  color: #2854b8;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cta-card {
+  text-align: center;
+  margin-top: 18px;
+}
+
+.cta-card p {
+  color: #6b7c98;
+  margin: 10px 0 18px;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .filtros-catalogo {
+    grid-template-columns: 1fr;
+  }
+}
+
